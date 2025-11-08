@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # Test PostgreSQL Database
+  test-postgres:
+    image: postgres:15-alpine
+    container_name: seo-platform-test-db
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: seo_platform_test
+    ports:
+      - '5433:5432'
+    volumes:
+      - test-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U test_user']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Test Redis
+  test-redis:
+    image: redis:7-alpine
+    container_name: seo-platform-test-redis
+    ports:
+      - '6380:6379'
+    command: redis-server --appendonly yes
+    volumes:
+      - test-redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Test Kafka
+  test-zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: seo-platform-test-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2182:2182'
+
+  test-kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: seo-platform-test-kafka
+    depends_on:
+      - test-zookeeper
+    ports:
+      - '9093:9093'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: test-zookeeper:2182
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ['CMD', 'kafka-broker-api-versions', '--bootstrap-server', 'localhost:9093']
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  test-postgres-data:
+  test-redis-data:

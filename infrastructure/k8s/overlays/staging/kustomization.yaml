@@ -1,0 +1,132 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: seo-platform-staging
+
+namePrefix: staging-
+
+resources:
+- ../../base/namespace.yaml
+- ../../base/rbac.yaml
+- ../../base/configmaps/app-config.yaml
+- ../../base/secrets/postgres-secret.yaml
+- ../../base/secrets/mongodb-secret.yaml
+- ../../base/secrets/redis-secret.yaml
+- ../../base/secrets/app-secret.yaml
+- ../../base/deployments/backend-deployment.yaml
+- ../../base/deployments/crawler-deployment.yaml
+- ../../base/deployments/ml-service-deployment.yaml
+- ../../base/deployments/frontend-deployment.yaml
+- ../../base/services/backend-service.yaml
+- ../../base/services/crawler-service.yaml
+- ../../base/services/ml-service-service.yaml
+- ../../base/services/frontend-service.yaml
+- ../../base/statefulsets/postgres-statefulset.yaml
+- ../../base/statefulsets/mongodb-statefulset.yaml
+- ../../base/statefulsets/redis-statefulset.yaml
+- ../../base/statefulsets/kafka-statefulset.yaml
+- ../../base/hpa.yaml
+- ../../base/pvc.yaml
+
+patches:
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: seo-platform-staging
+  target:
+    kind: Namespace
+    name: seo-platform
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2
+  target:
+    kind: Deployment
+    name: backend
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 3
+  target:
+    kind: Deployment
+    name: crawler
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2
+  target:
+    kind: Deployment
+    name: ml-service
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2
+  target:
+    kind: Deployment
+    name: frontend
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: StatefulSet
+    name: postgres
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: StatefulSet
+    name: mongodb
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: StatefulSet
+    name: redis
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: StatefulSet
+    name: kafka
+
+- patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 1
+  target:
+    kind: StatefulSet
+    name: zookeeper
+
+images:
+- name: ${REGISTRY}/seo-backend
+  newTag: staging-latest
+- name: ${REGISTRY}/seo-crawler
+  newTag: staging-latest
+- name: ${REGISTRY}/seo-ml-service
+  newTag: staging-latest
+- name: ${REGISTRY}/seo-frontend
+  newTag: staging-latest
+
+configMapGenerator:
+- name: app-config
+  behavior: merge
+  literals:
+  - log.level=debug
+  - api.url=https://staging-api.seo-platform.com
+  - ws.url=wss://staging-api.seo-platform.com
+
+labels:
+- pairs:
+    environment: staging

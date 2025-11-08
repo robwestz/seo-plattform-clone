@@ -1,0 +1,110 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy'
+        required: true
+
+env:
+  REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
+  KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_PRODUCTION }}
+  ENVIRONMENT: production
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.13.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Create backup
+        run: |
+          helm get values seo-platform -n seo-platform > backup-values-$(date +%Y%m%d-%H%M%S).yaml
+          kubectl get all -n seo-platform -o yaml > backup-resources-$(date +%Y%m%d-%H%M%S).yaml
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install seo-platform \
+            ./infrastructure/helm/seo-platform \
+            --namespace seo-platform \
+            --values ./infrastructure/helm/seo-platform/values.yaml \
+            --values ./infrastructure/helm/seo-platform/values-prod.yaml \
+            --set global.registry=${{ env.REGISTRY }} \
+            --set backend.image.tag=${{ steps.version.outputs.VERSION }} \
+            --set crawler.image.tag=${{ steps.version.outputs.VERSION }} \
+            --set mlService.image.tag=${{ steps.version.outputs.VERSION }} \
+            --set frontend.image.tag=${{ steps.version.outputs.VERSION }} \
+            --wait \
+            --timeout 15m \
+            --atomic
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/seo-platform-backend -n seo-platform --timeout=10m
+          kubectl rollout status deployment/seo-platform-frontend -n seo-platform --timeout=10m
+          kubectl rollout status deployment/seo-platform-crawler -n seo-platform --timeout=10m
+          kubectl rollout status deployment/seo-platform-ml-service -n seo-platform --timeout=10m
+
+      - name: Run smoke tests
+        run: |
+          kubectl run smoke-test --rm -i --restart=Never \
+            --image=curlimages/curl:latest \
+            --namespace=seo-platform \
+            -- curl -f http://seo-platform-backend:3000/health
+
+      - name: Run integration tests
+        run: |
+          # Add your integration test commands here
+          echo "Running integration tests..."
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          release_name: Release ${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Notify deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Production deployment ${{ steps.version.outputs.VERSION }} - ${{ job.status }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

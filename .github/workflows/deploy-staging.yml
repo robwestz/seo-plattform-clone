@@ -1,0 +1,76 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
+  KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_STAGING }}
+  ENVIRONMENT: staging
+
+jobs:
+  deploy:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.13.0'
+
+      - name: Configure kubectl
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Create namespace if not exists
+        run: |
+          kubectl create namespace seo-platform-staging --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install seo-platform-staging \
+            ./infrastructure/helm/seo-platform \
+            --namespace seo-platform-staging \
+            --values ./infrastructure/helm/seo-platform/values.yaml \
+            --set global.registry=${{ env.REGISTRY }} \
+            --set backend.image.tag=develop-${{ github.sha }} \
+            --set crawler.image.tag=develop-${{ github.sha }} \
+            --set mlService.image.tag=develop-${{ github.sha }} \
+            --set frontend.image.tag=develop-${{ github.sha }} \
+            --wait \
+            --timeout 10m
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/seo-platform-staging-backend -n seo-platform-staging
+          kubectl rollout status deployment/seo-platform-staging-frontend -n seo-platform-staging
+          kubectl rollout status deployment/seo-platform-staging-crawler -n seo-platform-staging
+
+      - name: Run smoke tests
+        run: |
+          kubectl run smoke-test --rm -i --restart=Never \
+            --image=curlimages/curl:latest \
+            --namespace=seo-platform-staging \
+            -- curl -f http://seo-platform-staging-backend:3000/health
+
+      - name: Notify deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: 'Staging deployment ${{ job.status }}'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

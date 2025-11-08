@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: crawler
+  namespace: seo-platform
+  labels:
+    app: crawler
+    tier: worker
+spec:
+  type: ClusterIP
+  selector:
+    app: crawler
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP

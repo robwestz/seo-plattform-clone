@@ -1,0 +1,145 @@
+{
+  "dashboard": {
+    "title": "SEO Platform - Business Metrics",
+    "tags": ["business", "kpi"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Active Users",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "count(count by(user_id) (user_activity{timestamp > now() - 5m}))",
+            "legendFormat": "Active Users (5m)"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "API Requests Today",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(http_requests_total[24h]))",
+            "legendFormat": "Total Requests"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Pages Crawled Today",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(crawler_pages_total[24h]))",
+            "legendFormat": "Pages Crawled"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Revenue (Daily)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(increase(revenue_total[24h]))",
+            "legendFormat": "Daily Revenue"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD"
+          }
+        }
+      },
+      {
+        "id": 5,
+        "title": "New Signups",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "sum(increase(user_signups_total[1h])) by (tier)",
+            "legendFormat": "{{tier}}"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "API Usage by Tier",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+        "targets": [
+          {
+            "expr": "sum(rate(api_calls_total[5m])) by (tier)",
+            "legendFormat": "{{tier}}"
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Subscription Distribution",
+        "type": "piechart",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "count by(tier) (user_subscriptions)",
+            "legendFormat": "{{tier}}"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Churn Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+        "targets": [
+          {
+            "expr": "sum(increase(user_cancellations_total[24h])) / sum(user_subscriptions_total)",
+            "legendFormat": "Daily Churn Rate"
+          }
+        ],
+        "yaxes": [
+          {"format": "percentunit"}
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Top Features Usage",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "targets": [
+          {
+            "expr": "topk(10, sum(rate(feature_usage_total[1h])) by (feature))",
+            "legendFormat": "{{feature}}"
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "Average Session Duration",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "targets": [
+          {
+            "expr": "avg(session_duration_seconds)",
+            "legendFormat": "Avg Session Duration"
+          }
+        ],
+        "yaxes": [
+          {"format": "s"}
+        ]
+      }
+    ],
+    "refresh": "1m",
+    "time": {
+      "from": "now-24h",
+      "to": "now"
+    }
+  }
+}
