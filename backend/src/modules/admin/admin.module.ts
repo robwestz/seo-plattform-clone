@@ -1,27 +1,29 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
-import { AdminGuard } from '../../common/guards/admin.guard';
-import { Tenant } from '../../database/entities/tenant.entity';
-import { User } from '../../database/entities/user.entity';
-import { Project } from '../../database/entities/project.entity';
+import { Tenant } from '../tenant/entities/tenant.entity';
+import { User } from '../user/entities/user.entity';
 import { Subscription } from '../subscription/entities/subscription.entity';
-import { Invoice } from '../billing/entities/invoice.entity';
 import { UsageEvent } from '../usage/entities/usage-event.entity';
+import { Invoice } from '../billing/entities/invoice.entity';
+import { SubscriptionModule } from '../subscription/subscription.module';
+import { UsageModule } from '../usage/usage.module';
+import { AnalyticsModule } from '../analytics/analytics.module';
 
 /**
  * Admin Module
- * Provides admin-only functionality for system management
+ * Provides administrative tools and platform management
  */
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Tenant, User, Project, Subscription, Invoice, UsageEvent]),
-    ConfigModule,
+    TypeOrmModule.forFeature([Tenant, User, Subscription, UsageEvent, Invoice]),
+    SubscriptionModule,
+    UsageModule,
+    AnalyticsModule,
   ],
+  providers: [AdminService],
   controllers: [AdminController],
-  providers: [AdminService, AdminGuard],
   exports: [AdminService],
 })
 export class AdminModule {}
