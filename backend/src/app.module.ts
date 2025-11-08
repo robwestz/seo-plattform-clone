@@ -96,7 +96,7 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
         migrations: [__dirname + '/database/migrations/*{.ts,.js}'],
         synchronize: configService.get<boolean>('database.sync', false),
         logging: configService.get<boolean>('database.logging', false),
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+        ssl: process.env.NODE_ENV === 'production' ? true : false,
         extra: {
           max: 20, // Maximum pool size
           connectionTimeoutMillis: 5000,
