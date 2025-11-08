@@ -80,8 +80,8 @@ app.post('/render/batch', async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Requests array is required' });
   }
 
-  if (requests.length > 100) {
-    return res.status(400).json({ error: 'Maximum 100 URLs per batch' });
+  if (requests.length > parseInt(process.env.MAX_BATCH_REQUESTS || '100')) {
+    return res.status(400).json({ error: 'Maximum batch size exceeded' });
   }
 
   try {
