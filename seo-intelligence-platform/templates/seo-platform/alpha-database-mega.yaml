@@ -1,0 +1,74 @@
+# Mega-File: Multi-Tenant Database Layer
+# Team: Alpha
+# Target: 1,500 LOC from this file
+
+id: "mega-alpha-database-core"
+version: "1.0.0"
+team: "alpha"
+
+expansion_rules:
+  entities:
+    - name: "Tenant"
+      table: "tenants"
+      features: ["audit", "soft_delete", "api_keys"]
+      
+    - name: "Project"
+      table: "projects"
+      features: ["tenant_isolation", "settings", "limits"]
+      
+    - name: "User"
+      table: "users"
+      features: ["auth", "roles", "two_factor"]
+
+generation_templates:
+  entity_model:
+    output: "/src/core/entities/{entity}.entity.ts"
+    template: |
+      import { Entity, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+      import { IsUUID, IsString } from 'class-validator';
+      
+      @Entity('{table}')
+      export class {Entity} {
+        @Column('uuid', { primary: true })
+        id: string;
+        
+        @Column('uuid')
+        @IsUUID()
+        tenantId: string;
+        
+        // Multi-tenant isolation
+        @ManyToOne(() => Tenant)
+        tenant: Tenant;
+        
+        @CreateDateColumn()
+        createdAt: Date;
+        
+        // Row-level security check
+        checkTenantAccess(requestTenantId: string): boolean {
+          return this.tenantId === requestTenantId;
+        }
+      }
+      
+  repository:
+    output: "/src/core/repositories/{entity}.repository.ts"
+    template: |
+      import { Injectable } from '@nestjs/common';
+      import { InjectRepository } from '@nestjs/typeorm';
+      import { Repository } from 'typeorm';
+      import { {Entity} } from '../entities/{entity}.entity';
+      
+      @Injectable()
+      export class {Entity}Repository {
+        constructor(
+          @InjectRepository({Entity})
+          private repository: Repository<{Entity}>
+        ) {}
+        
+        async findByTenant(tenantId: string) {
+          return this.repository.find({ where: { tenantId } });
+        }
+        
+        async createForTenant(tenantId: string, data: Partial<{Entity}>) {
+          return this.repository.save({ ...data, tenantId });
+        }
+      }

@@ -1,0 +1,45 @@
+project:
+  name: "SEO Intelligence Platform"
+  code_name: "seo-intel"
+  target_loc: 140000
+  teams: 10
+  duration: "2 hours"
+  
+technical:
+  databases:
+    - PostgreSQL with TimescaleDB
+    - MongoDB for crawl data
+    - Redis for caching
+    - Elasticsearch for search
+    - ClickHouse for analytics
+    
+  languages:
+    - TypeScript (60%)
+    - Python (25%)
+    - Go (15%)
+    
+  core_features:
+    - Multi-tenant SaaS
+    - Distributed crawler
+    - Real-time analytics
+    - ML-powered insights
+    - White-label support
+
+business:
+  pricing:
+    free: "10 searches/day"
+    pro: "$299/month"
+    business: "$999/month"
+    enterprise: "$2999+/month"
+  
+  target_market:
+    - SEO agencies
+    - E-commerce sites
+    - Content publishers
+    - Enterprise marketing teams
+    
+  differentiators:
+    - 50+ tools unified
+    - Swedish market focus
+    - True AI integration
+    - Unlimited data retention
