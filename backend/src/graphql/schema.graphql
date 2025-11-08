@@ -1,0 +1,539 @@
+# SEO Intelligence Platform - GraphQL Schema
+# Complete schema for all entities and operations
+
+# ------------------------------
+# Scalars
+# ------------------------------
+
+scalar DateTime
+scalar JSON
+
+# ------------------------------
+# Enums
+# ------------------------------
+
+enum Role {
+  ADMIN
+  OWNER
+  MEMBER
+  VIEWER
+}
+
+enum SubscriptionTier {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIAL
+  PAST_DUE
+  CANCELED
+  PAUSED
+}
+
+enum AuditStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum AuditSeverity {
+  CRITICAL
+  ERROR
+  WARNING
+  INFO
+}
+
+enum BacklinkStatus {
+  ACTIVE
+  LOST
+  PENDING
+}
+
+enum RankingEngine {
+  GOOGLE
+  BING
+  YAHOO
+  DUCKDUCKGO
+}
+
+# ------------------------------
+# User & Authentication
+# ------------------------------
+
+type User {
+  id: ID!
+  email: String!
+  firstName: String
+  lastName: String
+  fullName: String
+  avatarUrl: String
+  isActive: Boolean!
+  emailVerified: Boolean!
+  tenants: [UserTenant!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserTenant {
+  id: ID!
+  user: User!
+  tenant: Tenant!
+  role: Role!
+  isActive: Boolean!
+  joinedAt: DateTime!
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+# ------------------------------
+# Tenant & Multi-tenancy
+# ------------------------------
+
+type Tenant {
+  id: ID!
+  name: String!
+  slug: String!
+  domain: String
+  isActive: Boolean!
+  subscription: Subscription
+  whiteLabelConfig: WhiteLabelConfig
+  projects: [Project!]!
+  users: [UserTenant!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ------------------------------
+# Subscription & Billing
+# ------------------------------
+
+type Subscription {
+  id: ID!
+  tenant: Tenant!
+  tier: SubscriptionTier!
+  status: SubscriptionStatus!
+  currentPeriodStart: DateTime!
+  currentPeriodEnd: DateTime!
+  trialEnd: DateTime
+  limits: SubscriptionLimits!
+  usage: UsageStats!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SubscriptionLimits {
+  maxProjects: Int!
+  maxKeywords: Int!
+  maxUsers: Int!
+  maxCrawlPages: Int!
+  maxApiCalls: Int!
+  maxBacklinkChecks: Int!
+  maxCompetitors: Int!
+}
+
+type UsageStats {
+  projectsUsed: Int!
+  keywordsUsed: Int!
+  usersUsed: Int!
+  crawlPagesUsed: Int!
+  apiCallsUsed: Int!
+  backlinkChecksUsed: Int!
+  competitorsUsed: Int!
+  resetAt: DateTime!
+}
+
+# ------------------------------
+# White Label Configuration
+# ------------------------------
+
+type WhiteLabelConfig {
+  id: ID!
+  tenant: Tenant!
+  brandName: String!
+  logoUrl: String
+  faviconUrl: String
+  primaryColor: String!
+  secondaryColor: String!
+  customDomain: String
+  customCss: String
+  emailFromName: String
+  emailFromAddress: String
+  features: JSON!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ------------------------------
+# Project Management
+# ------------------------------
+
+type Project {
+  id: ID!
+  tenant: Tenant!
+  name: String!
+  domain: String!
+  targetCountry: String!
+  targetLanguage: String!
+  isActive: Boolean!
+  keywords: [Keyword!]!
+  rankings: [Ranking!]!
+  audits: [SiteAudit!]!
+  backlinks: [Backlink!]!
+  competitors: [Competitor!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# ------------------------------
+# Keywords & Rankings
+# ------------------------------
+
+type Keyword {
+  id: ID!
+  project: Project!
+  keyword: String!
+  searchVolume: Int
+  difficulty: Float
+  cpc: Float
+  intent: String
+  tags: [String!]!
+  isActive: Boolean!
+  rankings: [Ranking!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Ranking {
+  id: ID!
+  project: Project!
+  keyword: Keyword!
+  url: String!
+  position: Int!
+  previousPosition: Int
+  engine: RankingEngine!
+  location: String!
+  device: String!
+  features: [String!]!
+  trackedAt: DateTime!
+  createdAt: DateTime!
+}
+
+type RankingHistory {
+  keyword: Keyword!
+  history: [RankingDataPoint!]!
+}
+
+type RankingDataPoint {
+  position: Int!
+  url: String!
+  date: DateTime!
+}
+
+# ------------------------------
+# Site Audit
+# ------------------------------
+
+type SiteAudit {
+  id: ID!
+  project: Project!
+  status: AuditStatus!
+  startedAt: DateTime
+  completedAt: DateTime
+  pagesScanned: Int!
+  issuesFound: Int!
+  score: Float!
+  issues: [AuditIssue!]!
+  createdAt: DateTime!
+}
+
+type AuditIssue {
+  id: ID!
+  audit: SiteAudit!
+  category: String!
+  severity: AuditSeverity!
+  title: String!
+  description: String!
+  affectedUrls: [String!]!
+  recommendation: String!
+  createdAt: DateTime!
+}
+
+# ------------------------------
+# Backlinks
+# ------------------------------
+
+type Backlink {
+  id: ID!
+  project: Project!
+  sourceUrl: String!
+  targetUrl: String!
+  anchorText: String
+  status: BacklinkStatus!
+  domainAuthority: Float
+  pageAuthority: Float
+  isDoFollow: Boolean!
+  firstSeenAt: DateTime!
+  lastSeenAt: DateTime!
+  lostAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type BacklinkStats {
+  total: Int!
+  active: Int!
+  lost: Int!
+  doFollow: Int!
+  noFollow: Int!
+  averageDomainAuthority: Float!
+}
+
+# ------------------------------
+# Competitors
+# ------------------------------
+
+type Competitor {
+  id: ID!
+  project: Project!
+  domain: String!
+  name: String
+  isActive: Boolean!
+  metrics: CompetitorMetrics
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CompetitorMetrics {
+  domainAuthority: Float
+  organicKeywords: Int
+  organicTraffic: Int
+  backlinks: Int
+  referringDomains: Int
+  lastUpdated: DateTime!
+}
+
+# ------------------------------
+# Content Analysis
+# ------------------------------
+
+type ContentAnalysis {
+  id: ID!
+  project: Project!
+  url: String!
+  title: String
+  wordCount: Int!
+  readabilityScore: Float!
+  seoScore: Float!
+  issues: [String!]!
+  suggestions: [String!]!
+  analyzedAt: DateTime!
+  createdAt: DateTime!
+}
+
+# ------------------------------
+# Analytics
+# ------------------------------
+
+type AnalyticsSummary {
+  tenant: Tenant!
+  period: String!
+  totalProjects: Int!
+  totalKeywords: Int!
+  averageRanking: Float!
+  rankingChanges: Int!
+  auditScore: Float!
+  trafficEstimate: Int!
+  generatedAt: DateTime!
+}
+
+# ------------------------------
+# Queries
+# ------------------------------
+
+type Query {
+  # Authentication
+  me: User!
+
+  # Users
+  user(id: ID!): User
+  users(tenantId: ID!): [User!]!
+
+  # Tenants
+  tenant(id: ID!): Tenant
+  tenants: [Tenant!]!
+  myTenants: [Tenant!]!
+
+  # Projects
+  project(id: ID!): Project
+  projects(tenantId: ID!): [Project!]!
+
+  # Keywords
+  keyword(id: ID!): Keyword
+  keywords(projectId: ID!): [Keyword!]!
+  keywordSuggestions(seed: String!, limit: Int): [KeywordSuggestion!]!
+
+  # Rankings
+  ranking(id: ID!): Ranking
+  rankings(projectId: ID!, limit: Int, offset: Int): [Ranking!]!
+  rankingHistory(keywordId: ID!, days: Int): RankingHistory!
+
+  # Audits
+  audit(id: ID!): SiteAudit
+  audits(projectId: ID!): [SiteAudit!]!
+  latestAudit(projectId: ID!): SiteAudit
+
+  # Backlinks
+  backlink(id: ID!): Backlink
+  backlinks(projectId: ID!, status: BacklinkStatus): [Backlink!]!
+  backlinkStats(projectId: ID!): BacklinkStats!
+
+  # Competitors
+  competitor(id: ID!): Competitor
+  competitors(projectId: ID!): [Competitor!]!
+
+  # Content
+  contentAnalysis(id: ID!): ContentAnalysis
+  contentAnalyses(projectId: ID!): [ContentAnalysis!]!
+
+  # Subscription
+  subscription(tenantId: ID!): Subscription
+  usageStats(tenantId: ID!): UsageStats!
+
+  # Analytics
+  analyticsSummary(tenantId: ID!, period: String!): AnalyticsSummary!
+
+  # White Label
+  whiteLabelConfig(tenantId: ID!): WhiteLabelConfig
+}
+
+# ------------------------------
+# Mutations
+# ------------------------------
+
+type Mutation {
+  # Authentication
+  login(email: String!, password: String!): AuthPayload!
+  register(email: String!, password: String!, firstName: String, lastName: String): AuthPayload!
+  refreshToken(refreshToken: String!): AuthPayload!
+  logout: Boolean!
+
+  # Users
+  updateUser(id: ID!, firstName: String, lastName: String, avatarUrl: String): User!
+  deleteUser(id: ID!): Boolean!
+
+  # Tenants
+  createTenant(name: String!, slug: String!, domain: String): Tenant!
+  updateTenant(id: ID!, name: String, domain: String, isActive: Boolean): Tenant!
+  deleteTenant(id: ID!): Boolean!
+  inviteUser(tenantId: ID!, email: String!, role: Role!): UserTenant!
+
+  # Projects
+  createProject(tenantId: ID!, name: String!, domain: String!, targetCountry: String!, targetLanguage: String!): Project!
+  updateProject(id: ID!, name: String, domain: String, targetCountry: String, targetLanguage: String, isActive: Boolean): Project!
+  deleteProject(id: ID!): Boolean!
+
+  # Keywords
+  createKeyword(projectId: ID!, keyword: String!, tags: [String!]): Keyword!
+  updateKeyword(id: ID!, keyword: String, tags: [String!], isActive: Boolean): Keyword!
+  deleteKeyword(id: ID!): Boolean!
+  importKeywords(projectId: ID!, keywords: [String!]!): [Keyword!]!
+
+  # Rankings
+  trackRankings(projectId: ID!, keywordIds: [ID!]): [Ranking!]!
+
+  # Audits
+  startAudit(projectId: ID!, maxPages: Int): SiteAudit!
+  cancelAudit(id: ID!): Boolean!
+
+  # Backlinks
+  refreshBacklinks(projectId: ID!): [Backlink!]!
+
+  # Competitors
+  addCompetitor(projectId: ID!, domain: String!, name: String): Competitor!
+  updateCompetitor(id: ID!, name: String, isActive: Boolean): Competitor!
+  removeCompetitor(id: ID!): Boolean!
+
+  # Content
+  analyzeContent(projectId: ID!, url: String!): ContentAnalysis!
+
+  # Subscription
+  updateSubscription(tenantId: ID!, tier: SubscriptionTier!): Subscription!
+  cancelSubscription(tenantId: ID!): Subscription!
+
+  # White Label
+  updateWhiteLabelConfig(
+    tenantId: ID!
+    brandName: String
+    logoUrl: String
+    faviconUrl: String
+    primaryColor: String
+    secondaryColor: String
+    customDomain: String
+    customCss: String
+  ): WhiteLabelConfig!
+}
+
+# ------------------------------
+# Subscriptions (Real-time)
+# ------------------------------
+
+type Subscription {
+  # Ranking updates
+  rankingUpdated(projectId: ID!): Ranking!
+
+  # Audit progress
+  auditProgress(auditId: ID!): AuditProgressEvent!
+
+  # Backlink changes
+  backlinkChanged(projectId: ID!): BacklinkEvent!
+
+  # Project events
+  projectEvent(projectId: ID!): ProjectEvent!
+}
+
+# ------------------------------
+# Subscription Event Types
+# ------------------------------
+
+type AuditProgressEvent {
+  auditId: ID!
+  status: AuditStatus!
+  progress: Float!
+  pagesScanned: Int!
+  issuesFound: Int!
+  message: String
+}
+
+type BacklinkEvent {
+  type: String!
+  backlink: Backlink!
+  timestamp: DateTime!
+}
+
+type ProjectEvent {
+  type: String!
+  projectId: ID!
+  data: JSON!
+  timestamp: DateTime!
+}
+
+# ------------------------------
+# Supporting Types
+# ------------------------------
+
+type KeywordSuggestion {
+  keyword: String!
+  searchVolume: Int
+  difficulty: Float
+  cpc: Float
+  relevance: Float
+}

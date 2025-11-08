@@ -1,0 +1,680 @@
+openapi: 3.0.3
+info:
+  title: SEO Intelligence Platform API
+  description: |
+    Complete RESTful API for SEO analytics, keyword tracking, site audits, and backlink monitoring.
+
+    ## Authentication
+    All endpoints require JWT authentication via Bearer token in the Authorization header:
+    ```
+    Authorization: Bearer {your-jwt-token}
+    ```
+
+    ## Rate Limiting
+    API requests are rate-limited based on your subscription tier:
+    - **FREE**: 100 requests/hour
+    - **STARTER**: 1,000 requests/hour
+    - **PROFESSIONAL**: 5,000 requests/hour
+    - **ENTERPRISE**: 50,000 requests/hour
+
+    Rate limit headers are included in all responses:
+    - `X-RateLimit-Limit`: Maximum requests per window
+    - `X-RateLimit-Remaining`: Remaining requests in current window
+    - `X-RateLimit-Reset`: Time when the rate limit window resets
+
+    ## Versioning
+    The API supports versioning via URL path:
+    - `/api/v1/...` - Current stable version
+    - `/api/v2/...` - Next version (beta)
+
+    You can also specify version via headers:
+    - `X-API-Version: 1`
+    - `Accept: application/vnd.seo-platform.v1+json`
+
+    ## Pagination
+    List endpoints support cursor-based pagination:
+    - `limit`: Number of items per page (default: 50, max: 100)
+    - `cursor`: Cursor for next page
+
+    ## Webhooks
+    Configure webhooks to receive real-time notifications for events.
+    See `/docs/webhooks.md` for details.
+
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api@seo-platform.com
+    url: https://docs.seo-platform.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.seo-platform.com
+    description: Production server
+  - url: https://staging-api.seo-platform.com
+    description: Staging server
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Projects
+    description: SEO project management
+  - name: Keywords
+    description: Keyword tracking and research
+  - name: Rankings
+    description: Search engine ranking tracking
+  - name: Audits
+    description: Site audit and SEO analysis
+  - name: Backlinks
+    description: Backlink monitoring and analysis
+  - name: Competitors
+    description: Competitor tracking
+  - name: Analytics
+    description: Analytics and reporting
+  - name: Subscription
+    description: Subscription and billing management
+  - name: Webhooks
+    description: Webhook configuration
+
+paths:
+  # Authentication
+  /api/v1/auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and receive JWT tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePassword123!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/auth/register:
+    post:
+      tags: [Authentication]
+      summary: User registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                  minLength: 8
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # Projects
+  /api/v1/projects:
+    get:
+      tags: [Projects]
+      summary: List all projects
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Projects]
+      summary: Create a new project
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, domain, targetCountry, targetLanguage]
+              properties:
+                name:
+                  type: string
+                  example: My Website SEO
+                domain:
+                  type: string
+                  example: example.com
+                targetCountry:
+                  type: string
+                  example: US
+                targetLanguage:
+                  type: string
+                  example: en
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/v1/projects/{projectId}:
+    get:
+      tags: [Projects]
+      summary: Get project by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Projects]
+      summary: Update project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                domain:
+                  type: string
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+    delete:
+      tags: [Projects]
+      summary: Delete project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Project deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Keywords
+  /api/v1/projects/{projectId}/keywords:
+    get:
+      tags: [Keywords]
+      summary: List project keywords
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: List of keywords
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Keyword'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+    post:
+      tags: [Keywords]
+      summary: Add keyword to project
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [keyword]
+              properties:
+                keyword:
+                  type: string
+                  example: best seo tools
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  example: [tools, product]
+      responses:
+        '201':
+          description: Keyword added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Keyword'
+
+  # Rankings
+  /api/v1/projects/{projectId}/rankings:
+    get:
+      tags: [Rankings]
+      summary: Get current rankings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Current rankings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Ranking'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /api/v1/keywords/{keywordId}/rankings/history:
+    get:
+      tags: [Rankings]
+      summary: Get ranking history for keyword
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: keywordId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+            example: 90
+      responses:
+        '200':
+          description: Ranking history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RankingHistory'
+
+  # Audits
+  /api/v1/projects/{projectId}/audits:
+    get:
+      tags: [Audits]
+      summary: List project audits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of audits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Audit'
+
+    post:
+      tags: [Audits]
+      summary: Start new audit
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maxPages:
+                  type: integer
+                  default: 1000
+      responses:
+        '202':
+          description: Audit started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Audit'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      description: Number of items to return
+      schema:
+        type: integer
+        default: 50
+        maximum: 100
+
+    Cursor:
+      name: cursor
+      in: query
+      description: Pagination cursor
+      schema:
+        type: string
+
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        domain:
+          type: string
+        targetCountry:
+          type: string
+        targetLanguage:
+          type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Keyword:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        keyword:
+          type: string
+        searchVolume:
+          type: integer
+        difficulty:
+          type: number
+          format: float
+        cpc:
+          type: number
+          format: float
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    Ranking:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        keyword:
+          $ref: '#/components/schemas/Keyword'
+        url:
+          type: string
+        position:
+          type: integer
+        previousPosition:
+          type: integer
+        engine:
+          type: string
+          enum: [google, bing, yahoo]
+        trackedAt:
+          type: string
+          format: date-time
+
+    RankingHistory:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        position:
+          type: integer
+        url:
+          type: string
+
+    Audit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        pagesScanned:
+          type: integer
+        issuesFound:
+          type: integer
+        score:
+          type: number
+          format: float
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+
+    Pagination:
+      type: object
+      properties:
+        nextCursor:
+          type: string
+          nullable: true
+        hasMore:
+          type: boolean
+        total:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+        error:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    TooManyRequests:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+        X-RateLimit-Reset:
+          schema:
+            type: string
+            format: date-time
+        Retry-After:
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'

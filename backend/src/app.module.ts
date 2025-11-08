@@ -25,6 +25,19 @@ import { BacklinkModule } from './modules/backlinks/backlink.module';
 import { CompetitorModule } from './modules/competitors/competitor.module';
 import { ContentModule } from './modules/content/content.module';
 
+// Team Kappa - Business Logic & Monetization Modules
+import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { BillingModule } from './modules/billing/billing.module';
+import { UsageModule } from './modules/usage/usage.module';
+import { WhiteLabelModule } from './modules/white-label/white-label.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+
+// Team Zeta - API Layer & Developer Experience
+import { GraphQLModule } from './graphql/graphql.module';
+import { WebSocketModule } from './websocket/websocket.module';
+import { ApiModule } from './api/api.module';
+
 // Middleware
 import { TenantContextMiddleware } from './common/middleware/tenant-context.middleware';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
@@ -105,6 +118,19 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
     BacklinkModule,
     CompetitorModule,
     ContentModule,
+
+    // Team Kappa - Business Logic & Monetization Modules
+    SubscriptionModule,
+    BillingModule,
+    UsageModule,
+    WhiteLabelModule,
+    AdminModule,
+    AnalyticsModule,
+
+    // Team Zeta - API Layer & Developer Experience
+    GraphQLModule,
+    WebSocketModule,
+    ApiModule,
   ],
   controllers: [],
   providers: [],
