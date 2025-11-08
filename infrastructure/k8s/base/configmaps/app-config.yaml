@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: seo-platform
+  labels:
+    app: seo-platform
+data:
+  # Redis Configuration
+  redis.host: "redis-master"
+  redis.port: "6379"
+
+  # Kafka Configuration
+  kafka.brokers: "kafka-0.kafka-headless:9092,kafka-1.kafka-headless:9092,kafka-2.kafka-headless:9092"
+
+  # API Configuration
+  api.url: "https://api.seo-platform.com"
+  ws.url: "wss://api.seo-platform.com"
+
+  # JWT Configuration
+  jwt.expiresIn: "7d"
+
+  # Application Settings
+  log.level: "info"
+  crawler.workers: "50"
+  crawler.rateLimit: "1000"

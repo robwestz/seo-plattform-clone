@@ -1,0 +1,52 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: seo-platform
+
+resources:
+- ../../base/namespace.yaml
+- ../../base/rbac.yaml
+- ../../base/configmaps/app-config.yaml
+- ../../base/secrets/postgres-secret.yaml
+- ../../base/secrets/mongodb-secret.yaml
+- ../../base/secrets/redis-secret.yaml
+- ../../base/secrets/app-secret.yaml
+- ../../base/deployments/backend-deployment.yaml
+- ../../base/deployments/crawler-deployment.yaml
+- ../../base/deployments/ml-service-deployment.yaml
+- ../../base/deployments/frontend-deployment.yaml
+- ../../base/services/backend-service.yaml
+- ../../base/services/crawler-service.yaml
+- ../../base/services/ml-service-service.yaml
+- ../../base/services/frontend-service.yaml
+- ../../base/statefulsets/postgres-statefulset.yaml
+- ../../base/statefulsets/mongodb-statefulset.yaml
+- ../../base/statefulsets/redis-statefulset.yaml
+- ../../base/statefulsets/kafka-statefulset.yaml
+- ../../base/hpa.yaml
+- ../../base/pvc.yaml
+- ingress.yaml
+- network-policy.yaml
+- pod-disruption-budget.yaml
+
+images:
+- name: ${REGISTRY}/seo-backend
+  newTag: ${VERSION}
+- name: ${REGISTRY}/seo-crawler
+  newTag: ${VERSION}
+- name: ${REGISTRY}/seo-ml-service
+  newTag: ${VERSION}
+- name: ${REGISTRY}/seo-frontend
+  newTag: ${VERSION}
+
+configMapGenerator:
+- name: app-config
+  behavior: merge
+  literals:
+  - log.level=info
+  - api.url=https://api.seo-platform.com
+  - ws.url=wss://api.seo-platform.com
+
+labels:
+- pairs:
+    environment: production
