@@ -29,7 +29,7 @@ interface KeywordSuggestion {
   competition: number;
   intent: 'informational' | 'navigational' | 'commercial' | 'transactional';
   trend: number[];
-  serp Features: string[];
+  serpFeatures: string[];
   opportunityScore: number;
   isTracked: boolean;
 }

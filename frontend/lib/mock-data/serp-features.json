@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Featured Snippet",
+    "description": "A box with a summary of an answer, extracted from a webpage."
+  },
+  {
+    "name": "People Also Ask",
+    "description": "A box with questions related to the user's query."
+  },
+  {
+    "name": "Local Pack",
+    "description": "A map and a list of local business locations."
+  },
+  {
+    "name": "Knowledge Panel",
+    "description": "An information box that appears on the right side for entities."
+  },
+  {
+    "name": "Image Pack",
+    "description": "A horizontal row of images that appear in search results."
+  },
+  {
+    "name": "Video Carousel",
+    "description": "A carousel of video results, often from YouTube."
+  },
+  {
+    "name": "Top Stories",
+    "description": "A block of recent news articles related to the query."
+  },
+  {
+    "name": "Shopping Results",
+    "description": "Product listings for commercial queries."
+  },
+  {
+    "name": "Site Links",
+    "description": "Additional links that appear under the main URL for a result."
+  },
+  {
+    "name": "Reviews/Ratings",
+    "description": "Star ratings that appear under a search result."
+  }
+]

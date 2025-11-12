@@ -1,0 +1,70 @@
+{
+  "seo": [
+    {
+      "id": "seo-001",
+      "severity": "critical",
+      "message": "Page is not indexed by Google.",
+      "recommendation": "Ensure the page is not blocked by robots.txt and does not have a 'noindex' tag. Submit the URL to Google Search Console for indexing."
+    },
+    {
+      "id": "seo-002",
+      "severity": "warning",
+      "message": "The meta title is too short (under 30 characters).",
+      "recommendation": "Extend the meta title to be between 50-60 characters to improve click-through rates."
+    },
+    {
+      "id": "seo-003",
+      "severity": "warning",
+      "message": "The meta description is a duplicate of another page.",
+      "recommendation": "Write a unique meta description for this page to avoid confusion and improve SERP appearance."
+    },
+    {
+      "id": "seo-004",
+      "severity": "info",
+      "message": "The target keyword appears in the URL.",
+      "recommendation": "This is good practice. No action needed."
+    }
+  ],
+  "readability": [
+    {
+      "id": "read-001",
+      "severity": "warning",
+      "message": "Over 25% of sentences contain more than 20 words.",
+      "recommendation": "Shorten long sentences to make the content easier to read and understand."
+    },
+    {
+      "id": "read-002",
+      "severity": "info",
+      "message": "The Flesch reading ease score is 65, which is good.",
+      "recommendation": "The content is easily understandable by most people."
+    }
+  ],
+  "technical": [
+    {
+      "id": "tech-001",
+      "severity": "critical",
+      "message": "The page returns a 404 (Not Found) error.",
+      "recommendation": "Restore the page or implement a 301 redirect to a relevant, live page."
+    },
+    {
+      "id": "tech-002",
+      "severity": "warning",
+      "message": "An image is missing its alt text attribute.",
+      "recommendation": "Add descriptive alt text to the image to improve accessibility and image SEO."
+    },
+    {
+      "id": "tech-003",
+      "severity": "warning",
+      "message": "The page uses insecure HTTP instead of HTTPS.",
+      "recommendation": "Migrate the page to HTTPS to ensure security and build user trust."
+    }
+  ],
+  "engagement": [
+    {
+      "id": "eng-001",
+      "severity": "warning",
+      "message": "The page does not contain a clear call-to-action (CTA).",
+      "recommendation": "Add a button or link that encourages the user to take the next step (e.g., 'Sign Up', 'Learn More')."
+    }
+  ]
+}

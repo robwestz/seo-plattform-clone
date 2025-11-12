@@ -1,0 +1,27 @@
+{
+  "ecommerce": [
+    { "term": "buy handmade leather boots", "volume": "medium", "difficulty": "medium", "intent": ["commercial", "transactional"] },
+    { "term": "organic cotton baby clothes", "volume": "high", "difficulty": "high", "intent": ["commercial"] },
+    { "term": "custom mechanical keyboard", "volume": "medium", "difficulty": "high", "intent": ["transactional"] }
+  ],
+  "saas_tech": [
+    { "term": "best project management software", "volume": "high", "difficulty": "very-high", "intent": ["commercial", "informational"] },
+    { "term": "crm for small business", "volume": "high", "difficulty": "high", "intent": ["commercial"] },
+    { "term": "how to use zapier", "volume": "medium", "difficulty": "low", "intent": ["informational"] }
+  ],
+  "local_business": [
+    { "term": "plumber near me", "volume": "very-high", "difficulty": "medium", "intent": ["transactional", "navigational"] },
+    { "term": "best italian restaurant in brooklyn", "volume": "medium", "difficulty": "medium", "intent": ["commercial"] },
+    { "term": "emergency roof repair dallas", "volume": "medium", "difficulty": "high", "intent": ["transactional"] }
+  ],
+  "b2b": [
+    { "term": "lead generation services for b2b", "volume": "medium", "difficulty": "high", "intent": ["commercial"] },
+    { "term": "what is account-based marketing", "volume": "medium", "difficulty": "medium", "intent": ["informational"] },
+    { "term": "outsourced CFO services", "volume": "low", "difficulty": "medium", "intent": ["commercial"] }
+  ],
+  "content_marketing": [
+    { "term": "how to start a blog", "volume": "high", "difficulty": "high", "intent": ["informational"] },
+    { "term": "content marketing examples", "volume": "medium", "difficulty": "medium", "intent": ["informational"] },
+    { "term": "link building strategies", "volume": "high", "difficulty": "very-high", "intent": ["informational"] }
+  ]
+}

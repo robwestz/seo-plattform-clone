@@ -12,6 +12,10 @@ import {
   Link as LinkIcon,
   Settings,
   ChevronLeft,
+  Users,
+  FileText,
+  Sparkles,
+  BarChart3,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUiStore } from '@/lib/store/ui-store'
@@ -33,14 +37,34 @@ const menuItems = [
     icon: Search,
   },
   {
+    title: 'Advanced Research',
+    href: '/dashboard/keyword-research-advanced',
+    icon: Sparkles,
+  },
+  {
     title: 'Rank Tracking',
     href: '/dashboard/keywords/tracking',
     icon: TrendingUp,
   },
   {
+    title: 'Rankings Dashboard',
+    href: '/dashboard/rankings',
+    icon: BarChart3,
+  },
+  {
     title: 'SEO Audit',
     href: '/dashboard/audit',
     icon: FileSearch,
+  },
+  {
+    title: 'Content Analysis',
+    href: '/dashboard/content-analysis',
+    icon: FileText,
+  },
+  {
+    title: 'Competitor Analysis',
+    href: '/dashboard/competitor-analysis',
+    icon: Users,
   },
   {
     title: 'Backlinks',

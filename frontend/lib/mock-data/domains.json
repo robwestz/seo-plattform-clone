@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Innovatech Solutions",
+    "domain": "innovatech.com",
+    "industry": "SaaS",
+    "country": "USA",
+    "metrics": { "dr": 88, "traffic": 450000, "keywords": 60000 }
+  },
+  {
+    "name": "QuantumLeap AI",
+    "domain": "quantumleap.ai",
+    "industry": "AI/ML",
+    "country": "USA",
+    "metrics": { "dr": 75, "traffic": 120000, "keywords": 15000 }
+  },
+  {
+    "name": "Synergy Web",
+    "domain": "synergy.io",
+    "industry": "Web Development",
+    "country": "UK",
+    "metrics": { "dr": 65, "traffic": 80000, "keywords": 9000 }
+  },
+  {
+    "name": "EcoWear Apparel",
+    "domain": "ecowear.com",
+    "industry": "E-commerce",
+    "country": "Canada",
+    "metrics": { "dr": 55, "traffic": 250000, "keywords": 35000 }
+  },
+  {
+    "name": "Local Eats",
+    "domain": "localeats.de",
+    "industry": "Local Business",
+    "country": "Germany",
+    "metrics": { "dr": 45, "traffic": 50000, "keywords": 5000 }
+  },
+  {
+    "name": "DataDriven Co.",
+    "domain": "datadriven.co",
+    "industry": "B2B Services",
+    "country": "USA",
+    "metrics": { "dr": 82, "traffic": 300000, "keywords": 40000 }
+  }
+]
