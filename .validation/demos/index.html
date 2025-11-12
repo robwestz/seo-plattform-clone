@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEO Intelligence Platform - Demo</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-active {
+            border-bottom: 3px solid #667eea;
+            color: #667eea;
+        }
+
+        .pulse-green {
+            animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Top Navigation Bar -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i data-lucide="search" class="w-8 h-8"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold">SEO Intelligence Platform</h1>
+                        <p class="text-sm text-purple-200">Demo Environment - Test & Validation Lab</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full pulse-green"></span>
+                        <span class="text-sm">Live Demo</span>
+                    </div>
+                    <button class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg backdrop-blur-sm transition">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-6 py-8">
+
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-lg shadow-sm mb-6">
+            <div class="flex border-b border-gray-200">
+                <button onclick="showTab('dashboard')" id="tab-dashboard" class="px-6 py-4 font-semibold tab-active flex items-center space-x-2">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                    <span>Ranking Dashboard</span>
+                </button>
+                <button onclick="showTab('keyword')" id="tab-keyword" class="px-6 py-4 font-semibold text-gray-600 hover:text-gray-900 flex items-center space-x-2">
+                    <i data-lucide="key" class="w-5 h-5"></i>
+                    <span>Keyword Research</span>
+                </button>
+                <button onclick="showTab('competitor')" id="tab-competitor" class="px-6 py-4 font-semibold text-gray-600 hover:text-gray-900 flex items-center space-x-2">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span>Competitor Analysis</span>
+                </button>
+                <button onclick="showTab('analytics')" id="tab-analytics" class="px-6 py-4 font-semibold text-gray-600 hover:text-gray-900 flex items-center space-x-2">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                    <span>Analytics</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="content-dashboard" class="animate-fade-in">
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+
+                <!-- Total Keywords Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-blue-100 rounded-lg">
+                            <i data-lucide="hash" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-gray-600 text-sm font-medium mb-1">Totalt Antal Keywords</h3>
+                    <p class="text-3xl font-bold text-gray-900 mb-2">247</p>
+                    <div class="flex items-center space-x-3 text-sm">
+                        <span class="text-green-600 flex items-center">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            142 förbättrade
+                        </span>
+                        <span class="text-red-600 flex items-center">
+                            <i data-lucide="trending-down" class="w-4 h-4 mr-1"></i>
+                            68 försämrade
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Average Position Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-green-100 rounded-lg">
+                            <i data-lucide="target" class="w-6 h-6 text-green-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-gray-600 text-sm font-medium mb-1">Genomsnittlig Position</h3>
+                    <p class="text-3xl font-bold text-gray-900 mb-2">8.4</p>
+                    <div class="text-sm">
+                        <span class="text-green-600 flex items-center">
+                            <i data-lucide="arrow-down" class="w-4 h-4 mr-1"></i>
+                            -2.3 från föregående månad
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Total Clicks Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-purple-100 rounded-lg">
+                            <i data-lucide="mouse-pointer-click" class="w-6 h-6 text-purple-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-gray-600 text-sm font-medium mb-1">Totala Klick</h3>
+                    <p class="text-3xl font-bold text-gray-900 mb-2">45.2K</p>
+                    <div class="text-sm text-gray-500">
+                        892.4K impressions
+                    </div>
+                </div>
+
+                <!-- CTR Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 card-hover border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-yellow-100 rounded-lg">
+                            <i data-lucide="percent" class="w-6 h-6 text-yellow-600"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-gray-600 text-sm font-medium mb-1">Genomsnittlig CTR</h3>
+                    <p class="text-3xl font-bold text-gray-900 mb-2">5.07%</p>
+                    <div class="text-sm">
+                        <span class="text-green-600 flex items-center">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            +0.8% denna vecka
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Filters and Search -->
+            <div class="bg-white rounded-xl shadow-sm p-4 mb-6 border border-gray-100">
+                <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                    <div class="flex flex-col md:flex-row gap-4 flex-1 w-full">
+                        <!-- Search -->
+                        <div class="relative flex-1">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                            <input
+                                type="text"
+                                id="searchInput"
+                                placeholder="Sök efter keywords eller URLs..."
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                oninput="filterRankings()"
+                            />
+                        </div>
+
+                        <!-- Trend Filter -->
+                        <select id="trendFilter" onchange="filterRankings()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <option value="all">Alla Trender</option>
+                            <option value="up">Förbättrade</option>
+                            <option value="down">Försämrade</option>
+                            <option value="stable">Stabila</option>
+                        </select>
+
+                        <!-- Sort -->
+                        <select id="sortBy" onchange="filterRankings()" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            <option value="position">Position</option>
+                            <option value="change">Förändring</option>
+                            <option value="volume">Sökvolym</option>
+                            <option value="ctr">CTR</option>
+                        </select>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        <button onclick="refreshData()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition flex items-center space-x-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span>Uppdatera</span>
+                        </button>
+                        <button onclick="exportCSV()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition flex items-center space-x-2">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Exportera CSV</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rankings Table -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Keyword</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Position</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Förändring</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sökvolym</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Klick</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">CTR</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">URL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingsTable" class="divide-y divide-gray-200">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Keyword Research Tab -->
+        <div id="content-keyword" class="hidden">
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+                <!-- Keyword Input -->
+                <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="search" class="w-6 h-6 mr-2 text-purple-600"></i>
+                        Keyword Research
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sök Keyword</label>
+                            <div class="flex gap-2">
+                                <input
+                                    type="text"
+                                    id="keywordInput"
+                                    placeholder="t.ex. 'seo tjänster stockholm'"
+                                    class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                />
+                                <button onclick="searchKeyword()" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                                    Analysera
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Land</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>Sverige</option>
+                                    <option>Norge</option>
+                                    <option>Danmark</option>
+                                    <option>Finland</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Språk</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>Svenska</option>
+                                    <option>Engelska</option>
+                                    <option>Norska</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Databas</label>
+                                <select class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <option>Ahrefs</option>
+                                    <option>SEMrush</option>
+                                    <option>Moz</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="space-y-4">
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-sm p-6 text-white">
+                        <div class="flex items-center justify-between mb-2">
+                            <i data-lucide="database" class="w-8 h-8 opacity-80"></i>
+                        </div>
+                        <h3 class="text-sm font-medium mb-1 opacity-90">Keywords i databas</h3>
+                        <p class="text-3xl font-bold">2.4M</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-sm p-6 text-white">
+                        <div class="flex items-center justify-between mb-2">
+                            <i data-lucide="trending-up" class="w-8 h-8 opacity-80"></i>
+                        </div>
+                        <h3 class="text-sm font-medium mb-1 opacity-90">Analyserade denna månad</h3>
+                        <p class="text-3xl font-bold">12.8K</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyword Suggestions -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Keyword Suggestions</h3>
+                <div id="keywordSuggestions" class="space-y-2">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Competitor Analysis Tab -->
+        <div id="content-competitor" class="hidden">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+                <!-- Competitor List -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="users" class="w-6 h-6 mr-2 text-purple-600"></i>
+                        Konkurrenter
+                    </h2>
+                    <div class="space-y-3" id="competitorList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Keyword Gap Analysis -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="git-compare" class="w-6 h-6 mr-2 text-purple-600"></i>
+                        Keyword Gap Analysis
+                    </h2>
+                    <canvas id="gapChart" class="w-full" height="300"></canvas>
+                </div>
+
+            </div>
+
+            <!-- Competitor Rankings Comparison -->
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Ranking Comparison</h3>
+                <canvas id="competitorChart" class="w-full" height="200"></canvas>
+            </div>
+
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="content-analytics" class="hidden">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+                <!-- Position Trend Chart -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="trending-up" class="w-6 h-6 mr-2 text-purple-600"></i>
+                        Position Trend (30 dagar)
+                    </h2>
+                    <canvas id="trendChart" height="250"></canvas>
+                </div>
+
+                <!-- CTR by Position -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <i data-lucide="bar-chart-2" class="w-6 h-6 mr-2 text-purple-600"></i>
+                        CTR per Position
+                    </h2>
+                    <canvas id="ctrChart" height="250"></canvas>
+                </div>
+
+            </div>
+
+            <!-- Traffic Sources -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Trafik per Källa</h3>
+                    <canvas id="sourceChart" height="200"></canvas>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Device Distribution</h3>
+                    <canvas id="deviceChart" height="200"></canvas>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Top Landing Pages</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600 truncate">/seo-tjanster</span>
+                            <span class="text-sm font-semibold text-gray-900">12.4K</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600 truncate">/blogg/seo-guide</span>
+                            <span class="text-sm font-semibold text-gray-900">8.2K</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600 truncate">/case-studies</span>
+                            <span class="text-sm font-semibold text-gray-900">6.8K</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600 truncate">/kontakt</span>
+                            <span class="text-sm font-semibold text-gray-900">5.1K</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // Sample Data - Realistisk svensk SEO-data
+        const rankingsData = [
+            { id: 1, keyword: 'seo tjänster stockholm', position: 3, prevPosition: 5, volume: 2400, clicks: 890, impressions: 12450, url: '/seo-tjanster', trend: 'up', change: 2 },
+            { id: 2, keyword: 'seo konsult', position: 7, prevPosition: 8, volume: 1900, clicks: 420, impressions: 8200, url: '/konsulting', trend: 'up', change: 1 },
+            { id: 3, keyword: 'sökmotoroptimering', position: 2, prevPosition: 2, volume: 3100, clicks: 1240, impressions: 15600, url: '/seo-tjanster', trend: 'stable', change: 0 },
+            { id: 4, keyword: 'local seo', position: 12, prevPosition: 9, volume: 880, clicks: 145, impressions: 4200, url: '/local-seo', trend: 'down', change: -3 },
+            { id: 5, keyword: 'innehållsmarknadsföring', position: 5, prevPosition: 7, volume: 1200, clicks: 580, impressions: 7800, url: '/content-marketing', trend: 'up', change: 2 },
+            { id: 6, keyword: 'länkbygge', position: 8, prevPosition: 12, volume: 720, clicks: 280, impressions: 5100, url: '/linkbuilding', trend: 'up', change: 4 },
+            { id: 7, keyword: 'teknisk seo', position: 4, prevPosition: 3, volume: 1600, clicks: 720, impressions: 9200, url: '/teknisk-seo', trend: 'down', change: -1 },
+            { id: 8, keyword: 'seo verktyg', position: 15, prevPosition: 18, volume: 950, clicks: 180, impressions: 4500, url: '/verktyg', trend: 'up', change: 3 },
+            { id: 9, keyword: 'google analytics', position: 6, prevPosition: 6, volume: 5400, clicks: 980, impressions: 18200, url: '/analytics', trend: 'stable', change: 0 },
+            { id: 10, keyword: 'keyword research', position: 9, prevPosition: 11, volume: 1100, clicks: 340, impressions: 6400, url: '/keyword-research', trend: 'up', change: 2 },
+            { id: 11, keyword: 'on-page seo', position: 11, prevPosition: 10, volume: 890, clicks: 220, impressions: 4800, url: '/on-page', trend: 'down', change: -1 },
+            { id: 12, keyword: 'off-page seo', position: 13, prevPosition: 15, volume: 670, clicks: 160, impressions: 3900, url: '/off-page', trend: 'up', change: 2 },
+            { id: 13, keyword: 'seo audit', position: 1, prevPosition: 1, volume: 1800, clicks: 1560, impressions: 9800, url: '/audit', trend: 'stable', change: 0 },
+            { id: 14, keyword: 'mobil seo', position: 18, prevPosition: 14, volume: 540, clicks: 95, impressions: 2800, url: '/mobile-seo', trend: 'down', change: -4 },
+            { id: 15, keyword: 'voice search optimization', position: 22, prevPosition: 25, volume: 420, clicks: 48, impressions: 1900, url: '/voice-search', trend: 'up', change: 3 },
+        ];
+
+        let filteredData = [...rankingsData];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            renderRankings();
+            initKeywordSuggestions();
+            initCompetitorList();
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('[id^="content-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-"]').forEach(el => {
+                el.classList.remove('tab-active', 'text-purple-600');
+                el.classList.add('text-gray-600');
+            });
+
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            const activeTab = document.getElementById('tab-' + tabName);
+            activeTab.classList.add('tab-active', 'text-purple-600');
+            activeTab.classList.remove('text-gray-600');
+
+            // Initialize charts for tabs
+            if (tabName === 'analytics') {
+                setTimeout(initAnalyticsCharts, 100);
+            } else if (tabName === 'competitor') {
+                setTimeout(initCompetitorCharts, 100);
+            }
+
+            lucide.createIcons();
+        }
+
+        // Render Rankings Table
+        function renderRankings() {
+            const tbody = document.getElementById('rankingsTable');
+            tbody.innerHTML = '';
+
+            filteredData.forEach(row => {
+                const ctr = ((row.clicks / row.impressions) * 100).toFixed(2);
+                const trendIcon = row.trend === 'up' ? 'trending-up' : row.trend === 'down' ? 'trending-down' : 'minus';
+                const trendColor = row.trend === 'up' ? 'text-green-500' : row.trend === 'down' ? 'text-red-500' : 'text-gray-400';
+                const positionColor = row.position <= 3 ? 'bg-green-100 text-green-700' :
+                                     row.position <= 10 ? 'bg-blue-100 text-blue-700' :
+                                     row.position <= 20 ? 'bg-yellow-100 text-yellow-700' :
+                                     'bg-gray-100 text-gray-700';
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-50 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="${trendIcon}" class="w-4 h-4 ${trendColor}"></i>
+                            <span class="text-sm font-medium text-gray-900">${row.keyword}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-3 py-1 rounded-full text-sm font-semibold ${positionColor}">
+                            #${row.position}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${row.change !== 0 ? `
+                            <div class="flex items-center space-x-1">
+                                <i data-lucide="${row.change > 0 ? 'trending-up' : 'trending-down'}"
+                                   class="w-4 h-4 ${row.change > 0 ? 'text-green-500' : 'text-red-500'}"></i>
+                                <span class="text-sm font-medium ${row.change > 0 ? 'text-green-600' : 'text-red-600'}">
+                                    ${Math.abs(row.change)}
+                                </span>
+                            </div>
+                        ` : '<span class="text-sm text-gray-400">-</span>'}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${row.volume.toLocaleString()}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${row.clicks.toLocaleString()}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${ctr}%</td>
+                    <td class="px-6 py-4 text-sm text-gray-500 truncate max-w-xs">${row.url}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            lucide.createIcons();
+        }
+
+        // Filter Rankings
+        function filterRankings() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const trend = document.getElementById('trendFilter').value;
+            const sort = document.getElementById('sortBy').value;
+
+            filteredData = rankingsData.filter(row => {
+                const matchesSearch = !search ||
+                    row.keyword.toLowerCase().includes(search) ||
+                    row.url.toLowerCase().includes(search);
+                const matchesTrend = trend === 'all' || row.trend === trend;
+                return matchesSearch && matchesTrend;
+            });
+
+            // Sort
+            filteredData.sort((a, b) => {
+                switch(sort) {
+                    case 'position': return a.position - b.position;
+                    case 'change': return Math.abs(b.change) - Math.abs(a.change);
+                    case 'volume': return b.volume - a.volume;
+                    case 'ctr': return (b.clicks/b.impressions) - (a.clicks/a.impressions);
+                    default: return 0;
+                }
+            });
+
+            renderRankings();
+        }
+
+        // Refresh Data
+        function refreshData() {
+            const btn = event.target.closest('button');
+            const icon = btn.querySelector('i');
+            icon.style.animation = 'spin 1s linear infinite';
+
+            setTimeout(() => {
+                icon.style.animation = '';
+                alert('✅ Data uppdaterad! (Demo-läge: ingen faktisk API-anrop)');
+            }, 1000);
+        }
+
+        // Export CSV
+        function exportCSV() {
+            const csv = [
+                ['Keyword', 'Position', 'Förändring', 'Sökvolym', 'Klick', 'Impressions', 'CTR', 'URL'].join(','),
+                ...filteredData.map(r => [
+                    r.keyword,
+                    r.position,
+                    r.change,
+                    r.volume,
+                    r.clicks,
+                    r.impressions,
+                    ((r.clicks / r.impressions) * 100).toFixed(2),
+                    r.url
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rankings-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Keyword Research
+        function initKeywordSuggestions() {
+            const suggestions = [
+                { keyword: 'seo tjänster göteborg', volume: 1800, difficulty: 45, cpc: 85 },
+                { keyword: 'seo konsult malmö', volume: 920, difficulty: 38, cpc: 72 },
+                { keyword: 'seo byrå stockholm', volume: 2100, difficulty: 52, cpc: 95 },
+                { keyword: 'billig seo', volume: 680, difficulty: 28, cpc: 45 },
+                { keyword: 'seo strategi', volume: 1400, difficulty: 42, cpc: 68 },
+            ];
+
+            const container = document.getElementById('keywordSuggestions');
+            container.innerHTML = suggestions.map(s => `
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex-1">
+                        <span class="font-medium text-gray-900">${s.keyword}</span>
+                    </div>
+                    <div class="flex items-center space-x-6 text-sm">
+                        <div class="text-center">
+                            <div class="text-gray-500 text-xs">Volym</div>
+                            <div class="font-semibold text-gray-900">${s.volume.toLocaleString()}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-gray-500 text-xs">Svårighet</div>
+                            <div class="font-semibold ${s.difficulty > 50 ? 'text-red-600' : s.difficulty > 35 ? 'text-yellow-600' : 'text-green-600'}">${s.difficulty}</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-gray-500 text-xs">CPC</div>
+                            <div class="font-semibold text-gray-900">${s.cpc} kr</div>
+                        </div>
+                        <button class="px-3 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700">
+                            Lägg till
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function searchKeyword() {
+            const input = document.getElementById('keywordInput').value;
+            if (!input) {
+                alert('⚠️ Ange ett keyword att analysera');
+                return;
+            }
+            alert(`🔍 Analyserar: "${input}"\n\n(Demo-läge: ingen faktisk API-anrop)`);
+        }
+
+        // Competitor Analysis
+        function initCompetitorList() {
+            const competitors = [
+                { name: 'competitor1.se', keywords: 342, traffic: '45.2K', overlap: 67 },
+                { name: 'competitor2.se', keywords: 289, traffic: '38.9K', overlap: 54 },
+                { name: 'competitor3.se', keywords: 401, traffic: '52.1K', overlap: 48 },
+                { name: 'competitor4.se', keywords: 195, traffic: '21.4K', overlap: 38 },
+            ];
+
+            const container = document.getElementById('competitorList');
+            container.innerHTML = competitors.map(c => `
+                <div class="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold text-gray-900">${c.name}</span>
+                        <span class="text-sm text-purple-600 font-medium">${c.overlap}% overlap</span>
+                    </div>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600">
+                        <span>${c.keywords} keywords</span>
+                        <span>•</span>
+                        <span>${c.traffic} besökare/mån</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initCompetitorCharts() {
+            // Gap Analysis Chart
+            const gapCtx = document.getElementById('gapChart');
+            if (gapCtx && !gapCtx.chart) {
+                gapCtx.chart = new Chart(gapCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Dina Keywords', 'Gemensamma', 'Konkurrenters Unika'],
+                        datasets: [{
+                            label: 'Antal Keywords',
+                            data: [95, 152, 190],
+                            backgroundColor: ['#667eea', '#764ba2', '#f59e0b']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Competitor Ranking Comparison
+            const compCtx = document.getElementById('competitorChart');
+            if (compCtx && !compCtx.chart) {
+                compCtx.chart = new Chart(compCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun'],
+                        datasets: [
+                            {
+                                label: 'Din Site',
+                                data: [12.4, 11.8, 10.2, 9.5, 8.9, 8.4],
+                                borderColor: '#667eea',
+                                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Konkurrent 1',
+                                data: [15.2, 14.8, 14.1, 13.9, 13.5, 13.2],
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                reverse: true,
+                                title: { display: true, text: 'Genomsnittlig Position' }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Analytics Charts
+        function initAnalyticsCharts() {
+            // Trend Chart
+            const trendCtx = document.getElementById('trendChart');
+            if (trendCtx && !trendCtx.chart) {
+                trendCtx.chart = new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1 Dec', '5 Dec', '10 Dec', '15 Dec', '20 Dec', '25 Dec', '30 Dec'],
+                        datasets: [{
+                            label: 'Genomsnittlig Position',
+                            data: [12.4, 11.8, 10.9, 10.2, 9.5, 8.9, 8.4],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { reverse: true, title: { display: true, text: 'Position' } }
+                        }
+                    }
+                });
+            }
+
+            // CTR Chart
+            const ctrCtx = document.getElementById('ctrChart');
+            if (ctrCtx && !ctrCtx.chart) {
+                ctrCtx.chart = new Chart(ctrCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Pos 1-3', 'Pos 4-10', 'Pos 11-20', 'Pos 21+'],
+                        datasets: [{
+                            label: 'CTR %',
+                            data: [28.5, 8.2, 2.4, 0.8],
+                            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+
+            // Source Chart
+            const sourceCtx = document.getElementById('sourceChart');
+            if (sourceCtx && !sourceCtx.chart) {
+                sourceCtx.chart = new Chart(sourceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Organisk', 'Direkt', 'Referral', 'Social'],
+                        datasets: [{
+                            data: [68, 18, 10, 4],
+                            backgroundColor: ['#667eea', '#3b82f6', '#10b981', '#f59e0b']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Device Chart
+            const deviceCtx = document.getElementById('deviceChart');
+            if (deviceCtx && !deviceCtx.chart) {
+                deviceCtx.chart = new Chart(deviceCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Desktop', 'Mobile', 'Tablet'],
+                        datasets: [{
+                            data: [52, 42, 6],
+                            backgroundColor: ['#667eea', '#3b82f6', '#10b981']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+        }
+
+        // Add spinning animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+</body>
+</html>
